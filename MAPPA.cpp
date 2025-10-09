@@ -1,6 +1,10 @@
+#include "MAPPA.h"
 #include <random>
 #include <algorithm>
-#include "MAPPA.h"
+
+MAPPA::MAPPA(unsigned int cellSize) : cellSize(cellSize) {
+    generateDungeon();
+}
 
 void MAPPA::generateDungeon() {
     layout = std::vector<std::vector<char>>(10, std::vector<char>(10, 'W'));
@@ -28,5 +32,22 @@ void MAPPA::generateDungeon() {
         else if (side == "bottom") layout[9][pos] = 'P';
         else if (side == "left")   layout[pos][0] = 'P';
         else if (side == "right")  layout[pos][9] = 'P';
+    }
+}
+
+void MAPPA::draw(sf::RenderWindow& window) const {
+    for (size_t y = 0; y < layout.size(); ++y) {
+        for (size_t x = 0; x < layout[y].size(); ++x) {
+            sf::RectangleShape cell(sf::Vector2f(static_cast<float>(cellSize), static_cast<float>(cellSize)));
+            cell.setPosition(sf::Vector2f(static_cast<float>(x * cellSize), static_cast<float>(y * cellSize)));
+
+            switch (layout[y][x]) {
+                case 'W': cell.setFillColor(sf::Color::Black); break;
+                case 'F': cell.setFillColor(sf::Color(128, 128, 128)); break;
+                case 'P': cell.setFillColor(sf::Color::Green); break;
+            }
+
+            window.draw(cell);
+        }
     }
 }

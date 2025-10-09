@@ -1,9 +1,3 @@
-//
-// Created by Utente on 09/10/2025.
-//
-
-#ifndef PROGETTOVIDEOGIOCO_MAPPA_H
-#define PROGETTOVIDEOGIOCO_MAPPA_H
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -18,5 +12,3 @@ private:
     unsigned int cellSize;
     void generateDungeon();
 };
-
-#endif //PROGETTOVIDEOGIOCO_MAPPA_H

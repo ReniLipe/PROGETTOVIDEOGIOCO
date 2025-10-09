@@ -2,12 +2,12 @@
 #include "MAPPA.h"
 
 int main() {
-    sf::RenderWindow window{sf::VideoMode{sf::Vector2u{900, 500}}, "Dungeon"};
+    sf::RenderWindow window(sf::VideoMode({500, 500}), "Dungeon");
 
-    MAPPA mappa;
+    MAPPA mappa(50); // Celle da 50x50 pixel
 
     while (window.isOpen()) {
-        while (auto event = window.pollEvent()) {
+        while (const std::optional<sf::Event> event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
