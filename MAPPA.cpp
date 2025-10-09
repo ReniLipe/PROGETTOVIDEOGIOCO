@@ -1,37 +1,100 @@
 #include "MAPPA.h"
 #include <random>
 #include <algorithm>
+#include <stack>
 
-MAPPA::MAPPA(unsigned int cellSize) : cellSize(cellSize) {
+MAPPA::MAPPA(unsigned int cellSize, unsigned int width, unsigned int height)
+    : cellSize(cellSize), cols(width / cellSize), rows(height / cellSize) {
     generateDungeon();
 }
 
 void MAPPA::generateDungeon() {
-    layout = std::vector<std::vector<char>>(10, std::vector<char>(10, 'W'));
+    layout = std::vector<std::vector<char>>(rows, std::vector<char>(cols, 'W'));
 
-    // Crea un corridoio centrale percorribile
-    for (int y = 1; y < 9; ++y)
-        for (int x = 1; x < 9; ++x)
-            layout[y][x] = 'F';
+    // Carving labirinto
+    carveLabyrinth(1, 1);
 
-    // Lati disponibili
-    std::vector<std::string> sides = {"top", "bottom", "left", "right"};
+    // Aggiungi stanze
+    addRooms(5);
 
-    // Mescola e prendi 3 lati diversi
+    // Aggiungi porte
+    placeDoors();
+}
+
+void MAPPA::carveLabyrinth(int startX, int startY) {
     std::random_device rd;
     std::mt19937 gen(rd());
+    std::stack<std::pair<int, int>> stack;
+    stack.push({startX, startY});
+    layout[startY][startX] = 'F';
+
+    std::vector<std::pair<int, int>> directions = {{0, -2}, {0, 2}, {-2, 0}, {2, 0}};
+
+    while (!stack.empty()) {
+        auto [x, y] = stack.top();
+        std::shuffle(directions.begin(), directions.end(), gen);
+        bool carved = false;
+
+        for (auto [dx, dy] : directions) {
+            int nx = x + dx;
+            int ny = y + dy;
+
+            if (nx > 0 && ny > 0 && nx < cols - 1 && ny < rows - 1 && layout[ny][nx] == 'W') {
+                layout[ny][nx] = 'F';
+                layout[y + dy / 2][x + dx / 2] = 'F';
+                stack.push({nx, ny});
+                carved = true;
+                break;
+            }
+        }
+
+        if (!carved)
+            stack.pop();
+    }
+}
+
+void MAPPA::addRooms(int count) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> xDist(1, cols - 5);
+    std::uniform_int_distribution<> yDist(1, rows - 5);
+
+    for (int i = 0; i < count; ++i) {
+        int x = xDist(gen);
+        int y = yDist(gen);
+
+        for (int dy = 0; dy < 4; ++dy)
+            for (int dx = 0; dx < 4; ++dx)
+                layout[y + dy][x + dx] = 'F';
+    }
+}
+
+void MAPPA::placeDoors() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<std::string> sides = {"top", "bottom", "left", "right"};
     std::shuffle(sides.begin(), sides.end(), gen);
+    std::uniform_int_distribution<> posX(1, cols - 2);
+    std::uniform_int_distribution<> posY(1, rows - 2);
 
-    for (int i = 0; i < 3; ++i) {
-        std::string side = sides[i];
-        std::uniform_int_distribution<> dist(1, 8); // Evita angoli
+    int placed = 0;
+    for (const auto& side : sides) {
+        if (placed >= 3) break;
+        int pos = (side == "top" || side == "bottom") ? posX(gen) : posY(gen);
 
-        int pos = dist(gen);
-
-        if (side == "top")       layout[0][pos] = 'P';
-        else if (side == "bottom") layout[9][pos] = 'P';
-        else if (side == "left")   layout[pos][0] = 'P';
-        else if (side == "right")  layout[pos][9] = 'P';
+        if (side == "top" && layout[1][pos] == 'F') {
+            layout[0][pos] = 'P';
+            placed++;
+        } else if (side == "bottom" && layout[rows - 2][pos] == 'F') {
+            layout[rows - 1][pos] = 'P';
+            placed++;
+        } else if (side == "left" && layout[pos][1] == 'F') {
+            layout[pos][0] = 'P';
+            placed++;
+        } else if (side == "right" && layout[pos][cols - 2] == 'F') {
+            layout[pos][cols - 1] = 'P';
+            placed++;
+        }
     }
 }
 

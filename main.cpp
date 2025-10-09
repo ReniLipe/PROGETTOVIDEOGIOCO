@@ -2,9 +2,9 @@
 #include "MAPPA.h"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode({500, 500}), "Dungeon");
+    sf::RenderWindow window(sf::VideoMode({1280, 720}), "Labirinto con Stanze");
 
-    MAPPA mappa(50); // Celle da 50x50 pixel
+    MAPPA mappa(40, 1280, 720);
 
     while (window.isOpen()) {
         while (const std::optional<sf::Event> event = window.pollEvent()) {
