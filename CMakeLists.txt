@@ -1,21 +1,24 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.20)
 project(PROGETTOVIDEOGIOCO)
-set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
-
-FetchContent_Declare(SFML
+FetchContent_Declare(
+        sfml
         GIT_REPOSITORY https://github.com/SFML/SFML.git
         GIT_TAG 3.0.2
-        GIT_SHALLOW ON
-        EXCLUDE_FROM_ALL SYSTEM)
+)
+FetchContent_MakeAvailable(sfml)
 
-FetchContent_MakeAvailable(SFML)
+add_executable(PROGETTOVIDEOGIOCO main.cpp)
+target_link_libraries(PROGETTOVIDEOGIOCO sfml-graphics sfml-window sfml-system)
 
-add_executable(main main.cpp)
-target_compile_features(main PRIVATE cxx_std_20)
-target_link_libraries(main PRIVATE SFML::Graphics)
-target_include_directories(main PRIVATE ${SFML_SOURCE_DIR}/include)
-target_compile_definitions(main PRIVATE SFML_STATIC)
+add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${sfml_BINARY_DIR}/bin/sfml-graphics-d-3.dll
+        ${sfml_BINARY_DIR}/bin/sfml-window-d-3.dll
+        ${sfml_BINARY_DIR}/bin/sfml-system-d-3.dll
+        $<TARGET_FILE_DIR:PROGETTOVIDEOGIOCO>
+)
