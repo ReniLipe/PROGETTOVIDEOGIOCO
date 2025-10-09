@@ -1,0 +1,13 @@
+//
+// Created by Utente on 09/10/2025.
+//
+
+#ifndef PROGETTOVIDEOGIOCO_MAPPA_H
+#define PROGETTOVIDEOGIOCO_MAPPA_H
+
+
+class MAPPA {
+};
+
+
+#endif //PROGETTOVIDEOGIOCO_MAPPA_H
