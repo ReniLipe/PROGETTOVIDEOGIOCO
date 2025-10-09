@@ -4,6 +4,7 @@ project(PROGETTOVIDEOGIOCO)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# SFML via FetchContent
 include(FetchContent)
 FetchContent_Declare(
         sfml
@@ -12,9 +13,23 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(sfml)
 
-add_executable(PROGETTOVIDEOGIOCO main.cpp)
-target_link_libraries(PROGETTOVIDEOGIOCO sfml-graphics sfml-window sfml-system)
+# Include headers
+include_directories(include)
 
+# Executable target
+add_executable(PROGETTOVIDEOGIOCO
+        main.cpp
+        MAPPA.cpp
+)
+
+# Link SFML libraries
+target_link_libraries(PROGETTOVIDEOGIOCO
+        sfml-graphics
+        sfml-window
+        sfml-system
+)
+
+# Copy DLLs after build (debug version)
 add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${sfml_BINARY_DIR}/bin/sfml-graphics-d-3.dll

@@ -1,25 +1,21 @@
 #include <SFML/Graphics.hpp>
+#include "MAPPA.h"
 
 int main() {
-    sf::RenderWindow window{sf::VideoMode{sf::Vector2u{800, 600}}, "Finestra SFML"};
+    sf::RenderWindow window{sf::VideoMode{sf::Vector2u{900, 500}}, "Dungeon"};
+
+    MAPPA mappa;
 
     while (window.isOpen()) {
         while (auto event = window.pollEvent()) {
-            // Chiudi se l'utente clicca sulla X
             if (event->is<sf::Event::Closed>())
                 window.close();
-
-            // Chiudi se l'utente preme ESC
-            if (auto* key = event->getIf<sf::Event::KeyPressed>()) {
-                if (key->scancode == sf::Keyboard::Scancode::Escape)
-                    window.close();
-            }
         }
 
-        window.clear(sf::Color::Black);
+        window.clear();
+        mappa.draw(window);
         window.display();
     }
 
     return 0;
 }
-//:3
