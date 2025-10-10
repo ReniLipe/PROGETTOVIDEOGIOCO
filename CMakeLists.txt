@@ -3,7 +3,8 @@ project(PROGETTOVIDEOGIOCO)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(SFML_USE_STATIC_STD_LIBS FALSE)
+set(BUILD_SHARED_LIBS TRUE)
 # SFML via FetchContent
 include(FetchContent)
 FetchContent_Declare(
@@ -32,8 +33,8 @@ target_link_libraries(PROGETTOVIDEOGIOCO
 # Copy DLLs after build (debug version)
 add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${sfml_BINARY_DIR}/bin/sfml-graphics-d-3.dll
-        ${sfml_BINARY_DIR}/bin/sfml-window-d-3.dll
-        ${sfml_BINARY_DIR}/bin/sfml-system-d-3.dll
+        $<TARGET_FILE:sfml-graphics>
+        $<TARGET_FILE:sfml-window>
+        $<TARGET_FILE:sfml-system>
         $<TARGET_FILE_DIR:PROGETTOVIDEOGIOCO>
 )
