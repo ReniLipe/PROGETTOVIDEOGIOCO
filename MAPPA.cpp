@@ -1,23 +1,19 @@
 #include "MAPPA.h"
 #include <random>
-#include <algorithm>
 #include <stack>
+#include <algorithm>
 
 MAPPA::MAPPA(unsigned int cellSize, unsigned int width, unsigned int height)
-    : cellSize(cellSize), cols(width / cellSize), rows(height / cellSize) {
+    : cellSize(cellSize),
+      cols((width + cellSize - 1) / cellSize),
+      rows((height + cellSize - 1) / cellSize) {
     generateDungeon();
 }
 
 void MAPPA::generateDungeon() {
     layout = std::vector<std::vector<char>>(rows, std::vector<char>(cols, 'W'));
-
-    // Carving labirinto
     carveLabyrinth(1, 1);
-
-    // Aggiungi stanze
     addRooms(5);
-
-    // Aggiungi porte
     placeDoors();
 }
 
@@ -48,8 +44,7 @@ void MAPPA::carveLabyrinth(int startX, int startY) {
             }
         }
 
-        if (!carved)
-            stack.pop();
+        if (!carved) stack.pop();
     }
 }
 
@@ -83,17 +78,13 @@ void MAPPA::placeDoors() {
         int pos = (side == "top" || side == "bottom") ? posX(gen) : posY(gen);
 
         if (side == "top" && layout[1][pos] == 'F') {
-            layout[0][pos] = 'P';
-            placed++;
+            layout[0][pos] = 'P'; placed++;
         } else if (side == "bottom" && layout[rows - 2][pos] == 'F') {
-            layout[rows - 1][pos] = 'P';
-            placed++;
+            layout[rows - 1][pos] = 'P'; placed++;
         } else if (side == "left" && layout[pos][1] == 'F') {
-            layout[pos][0] = 'P';
-            placed++;
+            layout[pos][0] = 'P'; placed++;
         } else if (side == "right" && layout[pos][cols - 2] == 'F') {
-            layout[pos][cols - 1] = 'P';
-            placed++;
+            layout[pos][cols - 1] = 'P'; placed++;
         }
     }
 }
@@ -101,9 +92,8 @@ void MAPPA::placeDoors() {
 void MAPPA::draw(sf::RenderWindow& window) const {
     for (size_t y = 0; y < layout.size(); ++y) {
         for (size_t x = 0; x < layout[y].size(); ++x) {
-            sf::RectangleShape cell(sf::Vector2f(static_cast<float>(cellSize), static_cast<float>(cellSize)));
-            cell.setPosition(sf::Vector2f(static_cast<float>(x * cellSize), static_cast<float>(y * cellSize)));
-
+            sf::RectangleShape cell(sf::Vector2f((float)cellSize, (float)cellSize));
+                cell.setPosition(sf::Vector2f(x * cellSize, y * cellSize));
             switch (layout[y][x]) {
                 case 'W': cell.setFillColor(sf::Color::Black); break;
                 case 'F': cell.setFillColor(sf::Color(128, 128, 128)); break;
@@ -113,4 +103,29 @@ void MAPPA::draw(sf::RenderWindow& window) const {
             window.draw(cell);
         }
     }
+}
+
+sf::Vector2i MAPPA::getCasellaCamminabileCasuale() const {
+    std::vector<sf::Vector2i> camminabili;
+    for (int y = 0; y < rows; ++y)
+        for (int x = 0; x < cols; ++x)
+            if (layout[y][x] == 'F')
+                camminabili.emplace_back(x, y);
+
+    if (camminabili.empty()) return {1, 1};
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, (int)camminabili.size() - 1);
+    return camminabili[dis(gen)];
+}
+
+bool MAPPA::èCamminabile(sf::Vector2i cella) const {
+    if (cella.x < 0 || cella.y < 0 || cella.x >= (int)cols || cella.y >= (int)rows)
+        return false;
+    return layout[cella.y][cella.x] == 'F' || layout[cella.y][cella.x] == 'P';
+}
+
+int MAPPA::getDimensioneCella() const {
+    return cellSize;
 }

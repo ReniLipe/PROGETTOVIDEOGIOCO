@@ -1,18 +1,24 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <vector>
+#include <SFML/Graphics.hpp>
 
 class MAPPA {
 public:
-    MAPPA(unsigned int cellSize = 40, unsigned int width = 1280, unsigned int height = 720);
+    MAPPA(unsigned int cellSize, unsigned int width, unsigned int height);
+
     void draw(sf::RenderWindow& window) const;
+    sf::Vector2i getCasellaCamminabileCasuale() const;
+    bool èCamminabile(sf::Vector2i cella) const;
+    int getDimensioneCella() const;
 
 private:
-    std::vector<std::vector<char>> layout;
-    unsigned int cellSize;
-    unsigned int cols, rows;
     void generateDungeon();
-    void carveLabyrinth(int x, int y);
+    void carveLabyrinth(int startX, int startY);
     void addRooms(int count);
     void placeDoors();
+
+    unsigned int cellSize;
+    unsigned int cols;
+    unsigned int rows;
+    std::vector<std::vector<char>> layout;
 };

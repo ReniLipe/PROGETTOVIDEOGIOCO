@@ -21,6 +21,8 @@ include_directories(include)
 add_executable(PROGETTOVIDEOGIOCO
         main.cpp
         MAPPA.cpp
+        Giocatore.cpp
+        Giocatore.h
 )
 
 # Link SFML libraries
