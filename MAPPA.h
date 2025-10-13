@@ -10,6 +10,7 @@ public:
     sf::Vector2i getCasellaCamminabileCasuale() const;
     bool èCamminabile(sf::Vector2i cella) const;
     int getDimensioneCella() const;
+    char getTipoCella(int x, int y) const; // 🔧 Aggiunta per A*
 
 private:
     void generateDungeon();

@@ -50,3 +50,6 @@ void Giocatore::aggiorna(float deltaTime, const MAPPA& mappa) {
 void Giocatore::draw(sf::RenderWindow& window) const {
     window.draw(forma);
 }
+sf::Vector2f Giocatore::getPosizione() const {
+    return forma.getPosition();
+}

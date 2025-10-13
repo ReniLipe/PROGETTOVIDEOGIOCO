@@ -23,6 +23,8 @@ add_executable(PROGETTOVIDEOGIOCO
         MAPPA.cpp
         Giocatore.cpp
         Giocatore.h
+        VistAstar.cpp
+        VistAstar.h
 )
 
 # Link SFML libraries

@@ -129,3 +129,8 @@ bool MAPPA::èCamminabile(sf::Vector2i cella) const {
 int MAPPA::getDimensioneCella() const {
     return cellSize;
 }
+char MAPPA::getTipoCella(int x, int y) const {
+    if (x < 0 || y < 0 || x >= (int)cols || y >= (int)rows)
+        return 'W'; // fuori dai limiti = muro
+    return layout[y][x];
+}
