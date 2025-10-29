@@ -11,6 +11,7 @@ public:
     bool èCamminabile(sf::Vector2i cella) const;
     int getDimensioneCella() const;
     char getTipoCella(int x, int y) const; // 🔧 Aggiunta per A*
+    char getSimboloCasella(sf::Vector2i posizione);
 
 private:
     void generateDungeon();

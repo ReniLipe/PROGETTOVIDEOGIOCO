@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include "MAPPA.h"
 #include "Giocatore.h"
 #include "VistAstar.h"
@@ -8,6 +10,7 @@ int main() {
     const unsigned int larghezza = 1249;
     const unsigned int altezza = 739;
     const unsigned int dimensioneCella = 32;
+    bool vittoria = false;
 
     sf::RenderWindow window(sf::VideoMode({larghezza, altezza}), "Labirinto con Stanze");
     window.setFramerateLimit(60);
@@ -36,6 +39,13 @@ int main() {
 
     sf::Clock clock;
 
+    sf::Font font;
+    if (font.openFromFile("assets/arial-font/arial.ttf")) {
+        // errore
+    }
+    sf::Text testoVittoria(font, "YOU WIN!", 50);
+    testoVittoria.setFillColor(sf::Color::Cyan);
+
     while (window.isOpen()) {
         while (const std::optional<sf::Event> event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
@@ -43,7 +53,19 @@ int main() {
         }
 
         float deltaTime = clock.restart().asSeconds();
-        giocatore.aggiorna(deltaTime, mappa);
+        if (!vittoria) {
+            giocatore.aggiorna(deltaTime, mappa);
+        }
+        if (!vittoria) {
+            sf::Vector2i cellaCorrente(
+                static_cast<int>(giocatore.getPosizione().x) / dimensioneCella,
+                static_cast<int>(giocatore.getPosizione().y) / dimensioneCella
+            );
+
+            if (mappa.getSimboloCasella(cellaCorrente) == 'P') {
+                vittoria = true;
+            }
+        }
 
         // 🔄 Calcolo cella attuale del giocatore
         sf::Vector2f posPixel = giocatore.getPosizione();
@@ -66,6 +88,10 @@ int main() {
 
         if (astar->devoDisegnare())
             astar->disegnaPercorso(window, static_cast<float>(dimensioneCella));
+
+        if (vittoria) {
+            window.draw(testoVittoria);
+        }
 
         window.display();
     }

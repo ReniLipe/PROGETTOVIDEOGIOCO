@@ -134,3 +134,11 @@ char MAPPA::getTipoCella(int x, int y) const {
         return 'W'; // fuori dai limiti = muro
     return layout[y][x];
 }
+
+char MAPPA::getSimboloCasella(sf::Vector2i posizione) {
+    if (posizione.y >= 0 && posizione.y < layout.size() &&
+        posizione.x >= 0 && posizione.x < layout[posizione.y].size()) {
+        return layout[posizione.y][posizione.x];
+        }
+    return ' ';
+}

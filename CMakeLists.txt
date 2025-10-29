@@ -42,3 +42,9 @@ add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
         $<TARGET_FILE:sfml-system>
         $<TARGET_FILE_DIR:PROGETTOVIDEOGIOCO>
 )
+
+add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets/arial-font
+        $<TARGET_FILE_DIR:PROGETTOVIDEOGIOCO>/assets/arial-font
+)
