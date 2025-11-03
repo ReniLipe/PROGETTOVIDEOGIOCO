@@ -4,13 +4,17 @@ project(PROGETTOVIDEOGIOCO)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SFML_USE_STATIC_STD_LIBS FALSE)
-set(BUILD_SHARED_LIBS TRUE)
+# ------------------ ENABLE TESTING ------------------
+include(CTest)
+enable_testing()
 
-# Fix per Windows + MinGW (GTest)
+# Evita warning pkg-config su Windows
+set(PKG_CONFIG_EXECUTABLE "" CACHE FILEPATH "Path to pkg-config" FORCE)
+
+# Fix GTest su Windows CRT
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-# ------------------ SFML 3.0 via FetchContent ------------------
+# ------------------ SFML 3 via FetchContent ------------------
 include(FetchContent)
 FetchContent_Declare(
         sfml
@@ -19,7 +23,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(sfml)
 
-# Include headers
+# ------------------ INCLUDE HEADERS ------------------
 include_directories(include)
 
 # ------------------ EXECUTABLE GIOCO ------------------
@@ -46,7 +50,6 @@ add_custom_command(TARGET PROGETTOVIDEOGIOCO POST_BUILD
 # ------------------ GOOGLE TEST ------------------
 add_subdirectory(external/googletest)
 
-# Target per i test
 add_executable(UnitTests
         tests/test_main.cpp
         tests/GiocatoreTest.cpp
@@ -66,16 +69,16 @@ target_link_libraries(UnitTests PRIVATE
         sfml-system
 )
 
-# ------------------ Copia DLL SFML per UnitTests ------------------
-# Dal momento che le DLL sono già nella cartella cmake-build-debug, basta copiarle accanto all'eseguibile.
+# ------------------ COPY SFML DLLs FOR TESTS ------------------
 add_custom_command(TARGET UnitTests POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_BINARY_DIR}/sfml-graphics-d-3.dll"
-        "${CMAKE_BINARY_DIR}/sfml-window-d-3.dll"
-        "${CMAKE_BINARY_DIR}/sfml-system-d-3.dll"
+        "${CMAKE_BINARY_DIR}/_deps/sfml-build/bin/sfml-graphics-d-3.dll"
+        "${CMAKE_BINARY_DIR}/_deps/sfml-build/bin/sfml-window-d-3.dll"
+        "${CMAKE_BINARY_DIR}/_deps/sfml-build/bin/sfml-system-d-3.dll"
         $<TARGET_FILE_DIR:UnitTests>
-        COMMENT "Copy SFML DLLs next to UnitTests.exe"
+        COMMENT "Copy SFML DLLs for UnitTests.exe"
 )
 
-# Registra i test con CTest
-add_test(NAME GiocatoreTest COMMAND UnitTests)
+# ------------------ REGISTER TESTS ------------------
+include(GoogleTest)
+gtest_discover_tests(UnitTests)
